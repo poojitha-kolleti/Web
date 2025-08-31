@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Apex Planet Internship - Task 3</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+    }
+
+    /* Navbar */
+    nav {
+      display: flex;
+      justify-content: center;
+      gap: 20px;
+      background: teal;
+      padding: 15px;
+    }
+    nav a {
+      color: white;
+      text-decoration: none;
+      font-weight: bold;
+      cursor: pointer;
+    }
+    nav a:hover {
+      text-decoration: underline;
+    }
+
+    /* Sections */
+    section {
+      display: none;
+      padding: 20px;
+    }
+    section.active {
+      display: block;
+    }
+
+    /* Responsive Cards */
+    .content {
+      text-align: center;
+    }
+    .card {
+      background: #f4f4f4;
+      padding: 20px;
+      margin: 10px;
+      border-radius: 10px;
+      display: inline-block;
+      width: 30%;
+    }
+    @media (max-width: 900px) {
+      .card { width: 45%; }
+    }
+    @media (max-width: 600px) {
+      .card { width: 90%; }
+    }
+
+    /* Quiz Styling */
+    .quiz-container {
+      background: white;
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 0 10px gray;
+      width: 400px;
+      margin: auto;
+      text-align: center;
+    }
+    .quiz-container button {
+      padding: 10px;
+      margin: 5px;
+      cursor: pointer;
+      border: none;
+      background: teal;
+      color: white;
+      border-radius: 6px;
+    }
+    .quiz-container button:hover {
+      background: darkslategray;
+    }
+
+    /* API Box */
+    .box {
+      background: white;
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 0 10px gray;
+      width: 400px;
+      margin: auto;
+      text-align: center;
+    }
+    .box button {
+      padding: 10px;
+      margin-top: 10px;
+      cursor: pointer;
+      border: none;
+      background: teal;
+      color: white;
+      border-radius: 6px;
+    }
+    .box button:hover {
+      background: darkslategray;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Navigation -->
+  <nav>
+    <a onclick="showSection('responsive')">Responsive Design</a>
+    <a onclick="showSection('quiz')">Interactive Quiz</a>
+    <a onclick="showSection('api')">API Data Fetch</a>
+  </nav>
+
+  <!-- Responsive Design Section -->
+  <section id="responsive" class="active">
+    <h1 style="text-align:center;">Responsive Design Demo</h1>
+    <p style="text-align:center;">Resize the browser window to see layout changes</p>
+    <div class="content">
+      <div class="card">Card 1</div>
+      <div class="card">Card 2</div>
+      <div class="card">Card 3</div>
+    </div>
+  </section>
+
+  <!-- Interactive Quiz Section -->
+  <section id="quiz">
+    <div class="quiz-container">
+      <h2 id="question">Question will appear here</h2>
+      <div id="answers"></div>
+      <p id="result"></p>
+      <button onclick="nextQuestion()">Next</button>
+    </div>
+  </section>
+
+  <!-- API Fetch Section -->
+  <section id="api">
+    <div class="box">
+      <h2>Random Joke Generator 🤣</h2>
+      <p id="joke">Click the button to load a joke!</p>
+      <button onclick="getJoke()">Get Joke</button>
+    </div>
+  </section>
+
+  <script>
+    /* Navigation */
+    function showSection(sectionId) {
+      document.querySelectorAll("section").forEach(sec => sec.classList.remove("active"));
+      document.getElementById(sectionId).classList.add("active");
+    }
+
+    /* Quiz Logic */
+    const quizData = [
+      {
+        question: "What does HTML stand for?",
+        answers: ["Hyper Text Markup Language", "High Tech Machine Language", "Hyperlink Text Main Logic"],
+        correct: 0
+      },
+      {
+        question: "Which CSS property changes text color?",
+        answers: ["font-style", "color", "text-align"],
+        correct: 1
+      },
+      {
+        question: "JavaScript is a ___ language?",
+        answers: ["Markup", "Scripting", "Styling"],
+        correct: 1
+      }
+    ];
+    let currentQuestion = 0;
+    function loadQuestion() {
+      let q = quizData[currentQuestion];
+      document.getElementById("question").innerText = q.question;
+      let answersDiv = document.getElementById("answers");
+      answersDiv.innerHTML = "";
+      q.answers.forEach((ans, index) => {
+        let btn = document.createElement("button");
+        btn.innerText = ans;
+        btn.onclick = () => checkAnswer(index);
+        answersDiv.appendChild(btn);
+      });
+      document.getElementById("result").innerText = "";
+    }
+    function checkAnswer(selected) {
+      let q = quizData[currentQuestion];
+      let result = document.getElementById("result");
+      if (selected === q.correct) {
+        result.innerText = "✅ Correct!";
+      } else {
+        result.innerText = "❌ Wrong!";
+      }
+    }
+    function nextQuestion() {
+      currentQuestion++;
+      if (currentQuestion < quizData.length) {
+        loadQuestion();
+      } else {
+        document.querySelector(".quiz-container").innerHTML = "<h2>Quiz Completed 🎉</h2>";
+      }
+    }
+    loadQuestion();
+
+    /* API Fetch */
+    async function getJoke() {
+      let res = await fetch("https://official-joke-api.appspot.com/random_joke");
+      let data = await res.json();
+      document.getElementById("joke").innerText = data.setup + " - " + data.punchline;
+    }
+  </script>
+</body>
+</html>
